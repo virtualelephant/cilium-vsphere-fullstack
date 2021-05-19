@@ -1,0 +1,32 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: grafana-gateway
+spec:
+  selector:
+    istio: ingressgateway # use Istio default gateway implementation
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "kube-grafana.home.virtualelephant.com"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: grafana
+spec:
+  hosts:
+  - "kube-grafana.home.virtualelephant.com"
+  gateways:
+  - grafana-gateway
+  http:
+  - match:
+    route:
+    - destination:
+        port:
+          number: 3000
+        host: grafana.cilium-monitoring.svc.cluster.local
